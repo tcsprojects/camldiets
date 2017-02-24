@@ -1,0 +1,21 @@
+OASISFormat: 0.4
+Name:        Camldiets
+Version:     0.2
+Synopsis:    A highly efficient OCaml set implementation for fat sets, i.e. densely populated sets over a discrete linear order.
+Description: A highly efficient OCaml set implementation for fat sets, i.e. densely populated sets over a discrete linear order.
+Authors:     Oliver Friedmann, Martin Lange
+Maintainers: Oliver Friedmann, Martin Lange
+License:     BSD-3-clause
+Homepage: https://github.com/tcsprojects/camldiets
+
+SourceRepository head
+  Type: git
+  Location: git://github.com/tcsprojects/camldiets.git
+  Browser: https://github.com/tcsprojects/camldiets
+
+Plugins: META
+
+Library "Camldiets"
+  Path:       src
+  BuildTools: ocamlbuild
+  Modules:    Camldiets

@@ -1,18 +1,4 @@
 (***********************************************************
- *                      CAML DIET                          *
- *                                                         *
- *                  Copyright (c) 2010                     *
- *           Distributed under the BSD license.            *
- *                                                         *
- *                   Oliver Friedmann                      *
- *              Oliver.Friedmann@gmail.com                 *
- *                 University of Munich                    *
- *                                                         *
- *                    Martin Lange                         *
- *                Martin.Lange@gmail.com                   *
- *                 University of Kassel                    *
- *                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                         *
  * The code for handling the AVL trees is borrowed from    *
  * the Objective Caml Standard Library Set module.         *
@@ -21,15 +7,15 @@
  *                                                         *
  ***********************************************************)
 
- 
+
  module AvlTree = struct
 
 	let bal_const = 1
 
 	type 'a avltree = Empty | Node of 'a * int * 'a avltree * 'a avltree
-	
+
 	let empty = Empty
-	
+
 	let is_empty = function Empty -> true | _ -> false
 
 	let singleton x = Node (x, 1, Empty, Empty)
@@ -37,11 +23,11 @@
 	let left = function
 	    Empty -> raise Not_found
 	|   Node (_, _, l, _) -> l
-	
+
 	let right = function
 	    Empty -> raise Not_found
 	|	Node (_, _, _, r) -> r
-	
+
 	let rec min_elt = function
 		Empty -> raise Not_found
 	|	Node (x,_,Empty,_) -> x
@@ -55,14 +41,14 @@
 	let root = function
 	    Empty -> raise Not_found
 	|	Node (v, _, _, _) -> v
-	
+
 	let height = function
 	    Empty -> 0
 	|	Node (_, h, _, _) -> h
 
     let height_join left right =
     	1 + Pervasives.max (height left) (height right)
-    	
+
 	let create x l r =
 		Node (x, height_join l r, l, r)
 
@@ -96,7 +82,7 @@
 	         		)
 	    )
 	    else Node(x, (if hl >= hr then hl + 1 else hr + 1), l, r)
-	
+
 	let rec join v l r =
 	    let rec myadd left x = function
 	        Empty -> Node(x, 1, Empty, Empty)
@@ -116,12 +102,12 @@
 		Empty -> raise Not_found
 	|	Node (x, _, Empty, right) -> (x, right)
 	|	Node (x, _, left, right) -> let (x', left') = take_min left in (x', join x left' right)
-	
+
 	let rec take_max = function
 		Empty -> raise Not_found
 	|	Node (x, _, left, Empty) -> (x, left)
 	|	Node (x, _, left, right) -> let (x', right') = take_max right in (x', join x left right')
-	
+
     let reroot l r =
         if height l > height r
         then let (i, l') = take_max l in join i l' r
@@ -134,22 +120,22 @@
 	|	Node (x, _, Node(a, _, left, mid), right) ->
 			let n = Node (x, height_join mid right, mid, right) in
 			take_min_iter (Node (a, height_join left n, left, n))
-	
+
 	let take_min_iter2 = function
 		Empty -> (None, Empty)
 	|	t -> let (i, s) = take_min_iter t in (Some i, s)
-	
+
 	let rec take_max_iter = function
 		Empty -> raise Not_found
 	|	Node (x, _, left, Empty) -> (x, left)
 	|	Node (x, _, left, Node(a, _, mid, right)) ->
 			let n =  Node (x, height_join left mid, left, mid) in
 			take_max_iter (Node (a, height_join n right, n, right))
-	
+
 	let take_max_iter2 = function
 		Empty -> (None, Empty)
 	|	t -> let (i, s) = take_max_iter t in (Some i, s)
-	
+
 	let iter f t =
 		let rec iter_aux = function
 			(None, _) -> ()
@@ -159,21 +145,21 @@
 			)
 		in
 			iter_aux (take_min_iter2 t)
-	
+
 	let fold f t a =
 		let rec fold_aux a = function
 			(None, _) -> a
 		|	(Some x, rest) -> fold_aux (f x a) (take_min_iter2 rest)
 	  	in
 			fold_aux a (take_min_iter2 t)
-	
+
 	let fold_right f t a =
 		let rec fold_aux a = function
 			(None, _) -> a
 		|	(Some x, rest) -> fold_aux (f x a) (take_max_iter2 rest)
 	  	in
 			fold_aux a (take_max_iter2 t)
-	
+
 	let elements t  = fold_right (fun x -> fun xs -> x::xs) t []
 
 	let for_all f t = fold (fun x -> fun y -> (f x) && y) t true
@@ -197,12 +183,12 @@ module type MeasurableType =
 	val succ : t -> t
 	val dist : t -> t -> int
   end
-  
-  
+
+
 module Make(Ord: MeasurableType) =
   struct
     type elt = Ord.t
-	
+
     type t = (elt * elt) AvlTree.avltree
 
 	let safe_pred limit x =
@@ -231,7 +217,7 @@ module Make(Ord: MeasurableType) =
 				else (x, left)
 		in
 			find
-	
+
 	let find_del_right p =
 		let rec find = function
 			AvlTree.Empty -> (p,AvlTree.Empty)
@@ -243,18 +229,18 @@ module Make(Ord: MeasurableType) =
 				else (y, right)
 		in
 			find
-                 
+
 	let empty = AvlTree.empty
-  		
+
   	let is_empty = AvlTree.is_empty
 
 	let rec mem z = function
-		AvlTree.Empty -> false 
+		AvlTree.Empty -> false
 	|	AvlTree.Node ((x, y), _, left, right) ->
 			if Ord.compare z x < 0 then mem z left
 			else if Ord.compare z y > 0 then mem z right
 			else true
-		
+
 	let min_elt t =
 		fst (AvlTree.min_elt t)
 
@@ -282,6 +268,8 @@ module Make(Ord: MeasurableType) =
 				 if Ord.succ v = p
 				 then AvlTree.join (u, y) l right
 				 else AvlTree.Node ((p, y), h, left, right)
+
+    let of_list = List.fold_left (fun x y -> add y x) empty
 
 	let rec insert (p, q) = function
 		AvlTree.Empty -> AvlTree.Node((p, q), 1, AvlTree.Empty, AvlTree.Empty)
@@ -332,13 +320,13 @@ module Make(Ord: MeasurableType) =
 	  				in
 	  				if (Ord.compare y a < 0) && (Ord.compare y (Ord.pred a) < 0)
 	  				then let left' = insert (x, y) left in
-	  				     let (head, stream) = AvlTree.take_min_iter2 stream in 
+	  				     let (head, stream) = AvlTree.take_min_iter2 stream in
 	  				     union_helper left' (a, b) right limit head stream
 	  				else if (Ord.compare x b > 0) && (Ord.compare x (Ord.succ b) > 0)
 	  				then let (right', head, stream) = union' right limit head stream in
 	  				     (AvlTree.join (a,b) left right', head, stream)
 	  				else if Ord.compare b y >= 0
-	  				then let (head, stream) = AvlTree.take_min_iter2 stream in 
+	  				then let (head, stream) = AvlTree.take_min_iter2 stream in
 	  					 union_helper left (min a x, b) right limit head stream
 	  				else if greater_limit y
 	  				then (left, Some (min a x, y), stream)
@@ -380,6 +368,13 @@ module Make(Ord: MeasurableType) =
 		in
 			AvlTree.fold_right g t a
 
+    let find x t =
+        match fold (fun y a -> if Ord.compare x y = 0 then Some y else a) t None with
+        |   Some y -> y
+        |   None -> raise Not_found
+
+    let map f t =
+        fold (fun x -> add (f x)) t empty
 
 	let elements t  =
   		fold_right (fun x -> fun xs -> x::xs) t []

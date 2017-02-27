@@ -1,4 +1,4 @@
-Caml Diets
+Camldiets
 ==================
 
 Version 0.2, Copyright (c) 2013-2017
@@ -8,6 +8,11 @@ A highly efficient OCaml set implementation for fat sets, i.e. densely populated
 It is developed and maintained by:
 - (c) Oliver Friedmann, University of Munich (http://oliverfriedmann.com)
 - (c) Martin Lange, University of Kassel (http://carrick.fmv.informatik.uni-kassel.de/~mlange/)
+
+## OPAM
+
+You can install this package via OPAM under the name `Camldiets`.
+
 
 ## Credits
 The code for handling the AVL trees is borrowed from the Objective Caml Standard Library Set module.

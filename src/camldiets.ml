@@ -20,6 +20,7 @@
 
 	let singleton x = Node (x, 1, Empty, Empty)
 
+	(*
 	let left = function
 	    Empty -> raise Not_found
 	|   Node (_, _, l, _) -> l
@@ -27,6 +28,7 @@
 	let right = function
 	    Empty -> raise Not_found
 	|	Node (_, _, _, r) -> r
+	*)
 
 	let rec min_elt = function
 		Empty -> raise Not_found
@@ -38,16 +40,18 @@
 	|	Node (x,_,_,Empty) -> x
 	|	Node (_,_,_,right) -> max_elt right
 
+	(*
 	let root = function
 	    Empty -> raise Not_found
 	|	Node (v, _, _, _) -> v
+	*)
 
 	let height = function
 	    Empty -> 0
 	|	Node (_, h, _, _) -> h
 
-    let height_join left right =
-    	1 + Pervasives.max (height left) (height right)
+	let height_join left right =
+		1 + max (height left) (height right)
 
 	let create x l r =
 		Node (x, height_join l r, l, r)
@@ -108,7 +112,7 @@
 	|	Node (x, _, left, Empty) -> (x, left)
 	|	Node (x, _, left, right) -> let (x', right') = take_max right in (x', join x left right')
 
-    let reroot l r =
+	let reroot l r =
         if height l > height r
         then let (i, l') = take_max l in join i l' r
         else if r = Empty then Empty
@@ -160,6 +164,7 @@
 	  	in
 			fold_aux a (take_max_iter2 t)
 
+	(*
 	let elements t  = fold_right (fun x -> fun xs -> x::xs) t []
 
 	let for_all f t = fold (fun x -> fun y -> (f x) && y) t true
@@ -167,6 +172,7 @@
 	let exists  f t = fold (fun x -> fun y -> (f x) || y) t false
 
 	let cardinal t = fold (fun _ a -> a + 1) t 0
+	*)
 
 	let choose = function
   		Empty -> raise Not_found
@@ -179,10 +185,17 @@ module type MeasurableType =
   sig
     type t
     val compare : t -> t -> int
-	val pred : t -> t
-	val succ : t -> t
-	val dist : t -> t -> int
+	  val pred : t -> t
+	  val succ : t -> t
+	  val dist : t -> t -> int
   end
+
+
+module type DietSet = sig
+  include Set.S
+  val cardinal: t -> int
+	val height: t -> int
+end
 
 
 module Make(Ord: MeasurableType) =
@@ -194,8 +207,10 @@ module Make(Ord: MeasurableType) =
 	let safe_pred limit x =
   		if Ord.compare limit x < 0 then Ord.pred x else x
 
+	(*
 	let safe_succ limit x =
 		if Ord.compare limit x > 0 then Ord.succ x else x
+	*)
 
 	let max x y =
 		if Ord.compare x y > 0 then x else y
@@ -203,7 +218,7 @@ module Make(Ord: MeasurableType) =
 	let min x y =
 		if Ord.compare x y < 0 then x else y
 
-    let height (_,t) =
+	let height t =
     	AvlTree.height t
 
 	let find_del_left p =
@@ -301,7 +316,7 @@ module Make(Ord: MeasurableType) =
 	  	let rec union' input limit head stream =
 	  		match head with
 	  		    None -> (input, None, AvlTree.Empty)
-	  		|   Some (x, y) ->
+	  		|   Some (x, _) ->
 	  				match input with
 	  					AvlTree.Empty -> (AvlTree.Empty, head, stream)
 	  				|	AvlTree.Node ((a, b), _, left, right) ->
@@ -441,7 +456,7 @@ module Make(Ord: MeasurableType) =
 	let rec inter input stream =
 	  	let rec inter' input head stream =
 	  		match head with	None -> (AvlTree.Empty, None, AvlTree.Empty)
-	  		|   Some (x, y) -> match input with
+	  		|   Some (x, _) -> match input with
 	  				AvlTree.Empty -> (AvlTree.Empty, head, stream)
 	  			|	AvlTree.Node ((a, b), _, left, right) ->
 	  					let (left, head, stream) = if Ord.compare x a < 0 then inter' left head stream
@@ -473,7 +488,7 @@ module Make(Ord: MeasurableType) =
 	let diff input stream =
 	  	let rec diff' input head stream =
 	  		match head with	None -> (input, None, AvlTree.Empty)
-	  		|   Some (x, y) -> match input with
+	  		|   Some (x, _) -> match input with
 	  				AvlTree.Empty -> (AvlTree.Empty, head, stream)
 	  			|	AvlTree.Node ((a, b), _, left, right) ->
 	  					let (left, head, stream) = if Ord.compare x a < 0 then diff' left head stream
@@ -576,6 +591,44 @@ module Make(Ord: MeasurableType) =
 					[] -> AvlTree.reroot leftb rightb
 				|   i::is -> List.fold_left (fun x y -> (insert y x)) (AvlTree.join i leftb rightb) is
 			))
+
+	let disjoint s1 s2 = AvlTree.is_empty (inter s1 s2)
+
+	let min_elt_opt t = try Some (min_elt t) with Not_found -> None
+
+	let max_elt_opt t = try Some (max_elt t) with Not_found -> None
+
+	let choose_opt t = try Some (choose t) with Not_found -> None
+
+	let find_opt e t = try Some (find e t) with Not_found -> None
+
+    let find_first f t =
+        match fold (fun y a -> if f y then Some y else a) t None with
+        |   Some y -> y
+        |   None -> raise Not_found
+
+	let find_first_opt f t = try Some (find_first f t) with Not_found -> None
+
+	let find_last f t =
+		match fold_right (fun y a -> if f y then Some y else a) t None with
+		|   Some y -> y
+		|   None -> raise Not_found
+
+	let find_last_opt f t = try Some (find_last f t) with Not_found -> None
+
+	let to_list t = elements t
+
+	let filter_map f t = fold (fun x t -> match f x with Some y -> add y t | None -> t) t empty
+
+	let to_seq t = List.to_seq (to_list t)
+
+	let to_rev_seq t = List.to_seq (List.rev (to_list t))
+
+	let to_seq_from x t = to_seq (filter (fun y -> Ord.compare x y <= 0) t)
+
+	let add_seq s t = List.fold_left (fun x y -> add y x) t (List.of_seq s)
+
+	let of_seq s = add_seq s empty
 
 end
 

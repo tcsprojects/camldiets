@@ -1,7 +1,7 @@
 Camldiets
 ==================
 
-Version 0.2, Copyright (c) 2013-2017
+Version 0.3, Copyright (c) 2013-2025
 
 A highly efficient OCaml set implementation for fat sets, i.e. densely populated sets over a discrete linear order.
 

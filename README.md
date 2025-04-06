@@ -17,3 +17,30 @@ You can install this package via OPAM under the name `Camldiets`.
 ## Credits
 The code for handling the AVL trees is borrowed from the Objective Caml Standard Library Set module.
 (c) Xavier Leroy, projet Cristal, INRIA Rocquencourt
+
+
+## Commands
+
+
+### Build
+
+```
+dune build
+```
+
+### Release
+
+1. Change version in `dune-project`.
+2. Update `CHANGES.md`.
+3. Run `dune build`.
+4. Commit
+```
+  git status
+  git add -A
+  git commit -m "message"
+  git tag v0.x
+  git push origin master --tags
+```
+5. Release
+```
+  dune-release tag

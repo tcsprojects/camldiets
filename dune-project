@@ -4,6 +4,8 @@
 
 (generate_opam_files true)
 
+(source (github tcsprojects/camldiets))
+
 (package
  (name camldiets)
  (synopsis "A highly efficient OCaml set implementation for fat sets, i.e. densely populated sets over a discrete linear order")

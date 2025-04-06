@@ -1,0 +1,6 @@
+[package]
+name = "camldiets"
+
+[publish]
+# Dune will already generate the opam file, don't look in ./opam/
+opam = "camldiets.opam"

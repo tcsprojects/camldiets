@@ -45,4 +45,6 @@ dune build
 ```
   dune-release tag
   dune-release distrib
+  dune-release publish
+  dune-release opam submit
 ```  

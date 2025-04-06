@@ -2,9 +2,10 @@
 opam-version: "2.0"
 version: "0.3"
 synopsis:
-  "A highly efficient OCaml set implementation for fat sets, i.e. densely populated sets over a discrete linear order."
+  "A highly efficient OCaml set implementation for fat sets, i.e. densely populated sets over a discrete linear order"
 description:
   "A highly efficient OCaml set implementation for fat sets, i.e. densely populated sets over a discrete linear order."
+maintainer: ["Oliver Friedmann" "Martin Lange"]
 authors: ["Oliver Friedmann" "Martin Lange"]
 license: "BSD-3-clause"
 homepage: "https://github.com/tcsprojects/camldiets"

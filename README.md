@@ -38,9 +38,11 @@ dune build
   git status
   git add -A
   git commit -m "message"
-  git tag v0.x
-  git push origin master --tags
+  git tag v0.x [--force]
+  git push origin master --tags [--force]
 ```
 5. Release
 ```
   dune-release tag
+  dune-release distrib
+```  
